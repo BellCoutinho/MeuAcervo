@@ -1,0 +1,46 @@
+services:
+  db:
+    image: docker.io/library/postgres:latest
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin_teste
+      POSTGRES_DB: productcontrol
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "admin", "-d", "productcontrol"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      PG_DATABASE_NAME: productcontrol
+      PG_USER_NAME: admin
+      PG_PASSWORD: admin_teste
+      PG_HOST: db
+      PG_PORT: "5432"
+      JWT_SECRET: secreto_jwt_teste
+      JWT_ALGORITHM: HS256
+      JWT_EXPIRATION_HOURS: "24"
+      UPLOAD_DIR: /app/uploads
+      MAX_FILE_SIZE_MB: "50"
+      APP_ENV: development
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  uploads_data:

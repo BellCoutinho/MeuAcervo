@@ -1,0 +1,15 @@
+__pycache__
+*.py[cod]
+*.pyo
+.pytest_cache
+.coverage
+.venv
+venv
+uploads
+.git
+.gitignore
+.env
+*.md
+.dockerignore
+Dockerfile
+docker-compose.yml
